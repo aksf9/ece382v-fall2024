@@ -1,8 +1,6 @@
 package org.ece382vfall2024.asg1.server.model;
 
 
-import java.util.Objects;
-
 public class Order {
 
     public String getType() {
@@ -37,12 +35,12 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     String type;
@@ -54,7 +52,7 @@ public class Order {
 
     double orderId;
 
-    int userId;
+    String userName;
 
     @Override
     public String toString() {
@@ -63,7 +61,7 @@ public class Order {
                 ", quantity=" + quantity +
                 ", status='" + status + '\'' +
                 ", orderId=" + orderId +
-                ", userId=" + userId +
+                ", userId=" + userName +
                 '}';
     }
 }

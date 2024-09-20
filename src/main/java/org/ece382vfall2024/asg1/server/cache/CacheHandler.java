@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class CacheHandler {
 
-    public ConcurrentHashMap<Integer, Set<Double>> userCache = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, Set<Double>> userCache = new ConcurrentHashMap<>();
 
     public ConcurrentHashMap<Double, Order> orderCache = new ConcurrentHashMap<>();
 
