@@ -16,8 +16,8 @@ public class Client {
     private static int PORT = 1024;
     Socket clientSocket;
 
-     private PrintWriter out;
-     private BufferedReader in;
+    private PrintWriter out;
+    private BufferedReader in;
 
     DatagramPacket sendPacket;
     byte[] sendData;
@@ -33,30 +33,40 @@ public class Client {
         String read;
         PrintWriter out;
         BufferedReader in;
-        while(!(read = input.nextLine()).isEmpty())
-        {
-            if(read.equals("TCP")){
+
+        /**
+         *  Choose mode
+         *  ask for input
+         */
+        System.out.println("Type setmode T or setmode U or quit to end");
+        while (!(read = input.nextLine()).equalsIgnoreCase("quit")) {
+            String[] setmode = read.split("\\s+");
+
+            if (setmode[1].equals("T")) {
+                printAllOption();
                 read = input.nextLine();
 
                 client.sendAndReadMessage(read);
-            } else if(read.equals("UDP")){
+            } else if (setmode[1].equals("U")) {
+                printAllOption();
                 read = input.nextLine();
                 client.sendUDPMessage(read);
             }
-
+            System.out.println("Type setmode T or setmode U or quit to end");
         }
         client.tcpCleanup();
         client.udpCleanup();
+    }
+
+    private void udpCleanup() {
+
+        if (clientUDPSocket != null) {
+            clientUDPSocket.close();
         }
 
-    private  void udpCleanup() {
-
-            if (clientUDPSocket != null) {
-                clientUDPSocket.close();
-            }
-
     }
-    private  void tcpCleanup() {
+
+    private void tcpCleanup() {
         try {
             if (out != null) {
                 out.close();
@@ -71,41 +81,38 @@ public class Client {
     }
 
 
-    private  void sendAndReadMessage(String message) throws IOException {
+    private void sendAndReadMessage(String message) throws IOException {
 
-            out.println(message);
-            //String resp = in.readLine(); // read is blocking call
-            //return resp;
+        out.println(message);
+        //String resp = in.readLine(); // read is blocking call
+        //return resp;
     }
 
-    private void sendUDPMessage(String message) throws IOException{
+    private void sendUDPMessage(String message) throws IOException {
         sendData = message.getBytes();
         sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("127.0.0.1"), 5001);
         clientUDPSocket.send(sendPacket);
     }
 
-    private  void startTCPConnection() throws IOException {
+    private void startTCPConnection() throws IOException {
 
         clientSocket = new Socket(IP, PORT);
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }
 
-    private  void startUDPConnection() throws IOException {
+    private void startUDPConnection() throws IOException {
         clientUDPSocket = new DatagramSocket();
         clientUDPSocket.setSoTimeout(1000);
     }
 
 
-    private static void printAllOption(){
+    private static void printAllOption() {
         System.out.println("Welcome, Please choose out of following. Enter done to quit");
-        System.out.println("1 for setmode");
-        System.out.println("2 for purchasing an available item");
-        System.out.println("3 for cancelling order");
-        System.out.println("4 for search order for an user");
-        System.out.println("5 for list all available items");
-        System.out.println("6 Test server with tcp");
-        System.out.println("7 Return to choices");
+        System.out.println("purchase <user-name> <product-name> <quantity>");
+        System.out.println("cancel <order-id>");
+        System.out.println("search <user-name>");
+        System.out.println("list");
     }
 
 }

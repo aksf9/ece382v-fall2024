@@ -1,16 +1,18 @@
 package org.ece382vfall2024.asg1.server;
 
 import org.ece382vfall2024.asg1.server.cache.CacheHandler;
-import org.ece382vfall2024.asg1.server.handler.ClientHandler;
+import org.ece382vfall2024.asg1.server.handler.TCPClientHandler;
+import org.ece382vfall2024.asg1.server.handler.UDPClientHandler;
+import org.ece382vfall2024.asg1.server.processor.ChoiceProcessor;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.*;
 import java.sql.Timestamp;
 
 public class Server {
 
     public static double orderCount = 1d;
+    public static CacheHandler cacheHandler = new CacheHandler();
 
     public static void main(String ars[]) throws FileNotFoundException {
 
@@ -28,28 +30,13 @@ public class Server {
         }
         System.out.println("Server Started. Listening for Clients on port 5001" + "...");
         // Assume messages are not over 1024 bytes
-        byte[] receiveData = new byte[1024];
-        DatagramPacket receivePacket;
-        while (true) {
-            // Server waiting for clients message
-            receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            try {
-                serverSocket.receive(receivePacket);
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-            // Get the client's IP address and port
-            InetAddress IPAddress = receivePacket.getAddress();
-            int port = receivePacket.getPort();
-            // Convert Byte Data to String
-            String clientMessage = new String(receivePacket.getData(), 0, receivePacket.getLength());
-            // Print the message with log header
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            System.out.println("[" + timestamp.toString() + " ,IP: " + IPAddress + " ,Port: " + port + "]  " + clientMessage);
-        }
+
+            ChoiceProcessor choiceProcessor = new ChoiceProcessor(cacheHandler);
+            UDPClientHandler clientHandler = new UDPClientHandler(serverSocket, choiceProcessor);
+            new Thread(clientHandler).start();
+
     }
     private static void tcpServer() {
-        CacheHandler cacheHandler = new CacheHandler();
         ServerSocket server = null;
 
         while(true) {
@@ -62,8 +49,9 @@ public class Server {
                     System.out.println("New client connected"
                             + client.getInetAddress()
                             .getHostAddress());
-                    ClientHandler clientHandler = new ClientHandler(client, cacheHandler);
-                    new Thread(clientHandler).start();
+                    ChoiceProcessor choiceProcessor = new ChoiceProcessor(cacheHandler);
+                    TCPClientHandler TCPClientHandler = new TCPClientHandler(client, choiceProcessor);
+                    new Thread(TCPClientHandler).start();
                 }
             } catch (Exception e) {
                 System.out.println(e);

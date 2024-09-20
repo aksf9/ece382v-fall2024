@@ -2,31 +2,28 @@ package org.ece382vfall2024.asg1.server.handler;
 
 import lombok.extern.log4j.Log4j2;
 import org.ece382vfall2024.asg1.server.Server;
-import org.ece382vfall2024.asg1.server.cache.CacheHandler;
-import org.ece382vfall2024.asg1.server.model.Order;
+import org.ece382vfall2024.asg1.server.processor.ChoiceProcessor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.Map;
 
 
 @Log4j2
-public class ClientHandler implements Runnable {
+public class TCPClientHandler implements Runnable {
 
     Socket clientSocket;
 
-    CacheHandler cacheHandler;
+    ChoiceProcessor choiceProcessor;
 
     private synchronized double getCount(){
         return Server.orderCount++;
     }
-    public ClientHandler(Socket client, CacheHandler cacheHandler) {
+    public TCPClientHandler(Socket client, ChoiceProcessor choiceProcessor) {
         this.clientSocket = client;
-        this.cacheHandler = cacheHandler;
+        this.choiceProcessor = choiceProcessor;
     }
 
     @Override
@@ -51,7 +48,7 @@ public class ClientHandler implements Runnable {
                 // client
                 System.out.println(String.format("Sent from the client: %s", line));
                 String[] option = line.split("\\s+");
-                processor(option);
+                choiceProcessor.processor(option);
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -72,7 +69,7 @@ public class ClientHandler implements Runnable {
     }
 
 
-    private void processor(String[] option) {
+    /*private void processor(String[] option) {
         if(option.length == 0){
             System.out.println("Not valid option");
             return;
@@ -146,5 +143,5 @@ public class ClientHandler implements Runnable {
 
     private void availableInventory() {
          this.cacheHandler.inventoryCache.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(y -> System.out.println( String.format("Product name =%s , Quantity=%s",y.getKey(), y.getValue()) ));
-    }
+    }*/
 }
