@@ -10,6 +10,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
+import static java.lang.System.exit;
+
 public class Client {
 
     private static String IP = "localhost";
@@ -26,7 +28,6 @@ public class Client {
 
     public static void main(String args[]) throws IOException {
         Client client = new Client();
-        //printAllOption();
         client.startTCPConnection();
         client.startUDPConnection();
         Scanner input = new Scanner(System.in);
@@ -41,16 +42,20 @@ public class Client {
         System.out.println("Type setmode T or setmode U or quit to end");
         while (!(read = input.nextLine()).equalsIgnoreCase("quit")) {
             String[] setmode = read.split("\\s+");
-
+            if(setmode.length <=1){
+                System.out.println("Wrong input. Restart client");
+                exit(0);
+            }
             if (setmode[1].equals("T")) {
                 printAllOption();
                 read = input.nextLine();
-
-                client.sendAndReadMessage(read);
+                String output = client.sendAndReadMessage(read);
+                System.out.println(output);
             } else if (setmode[1].equals("U")) {
                 printAllOption();
                 read = input.nextLine();
-                client.sendUDPMessage(read);
+                String output = client.sendAndReceiveUDPMessage(read);
+                System.out.println(output);
             }
             System.out.println("Type setmode T or setmode U or quit to end");
         }
@@ -81,17 +86,28 @@ public class Client {
     }
 
 
-    private void sendAndReadMessage(String message) throws IOException {
+    private String sendAndReadMessage(String message) throws IOException {
 
         out.println(message);
-        //String resp = in.readLine(); // read is blocking call
-        //return resp;
+        String resp = ""; // read is blocking call
+        String output = "";
+        while(!(resp = in.readLine()).equalsIgnoreCase("end")){
+            output = output.concat(resp).concat("\n");
+        }
+        return output;
     }
 
-    private void sendUDPMessage(String message) throws IOException {
+    private String sendAndReceiveUDPMessage(String message) throws IOException {
         sendData = message.getBytes();
         sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("127.0.0.1"), 5001);
         clientUDPSocket.send(sendPacket);
+        sendData = new byte[65000];
+        sendPacket = new DatagramPacket(sendData, sendData.length);
+        clientUDPSocket.receive(sendPacket);
+        String received = new String(
+                sendPacket.getData(), 0, sendPacket.getLength());
+        received = received.replace("end", "").trim();
+        return received;
     }
 
     private void startTCPConnection() throws IOException {

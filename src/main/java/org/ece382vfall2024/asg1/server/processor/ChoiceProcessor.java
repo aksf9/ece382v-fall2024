@@ -18,79 +18,98 @@ public class ChoiceProcessor {
     public ChoiceProcessor( CacheHandler cacheHandler) {
         this.cacheHandler = cacheHandler;
     }
-    public void processor(String[] option) {
+    public String processor(String[] option) {
         if(option.length == 0){
             System.out.println("Not valid option");
-            return;
+            return "Not valid option".concat("\n").concat("end");
         }
         switch (option[0].trim().toLowerCase()) {
-            case "purchase":
+            case "purchase" -> {
                 Order order = new Order();
                 order.setType(option[2]);
                 order.setUserId(Integer.valueOf(option[1]));
                 order.setQuantity(Integer.valueOf(option[3]));
                 order.setOrderId(getCount());
-                purchaseItem(order);
-                break;
-            case "cancel":
-                cancelOrder(Double.valueOf(option[1]));
-                break;
-            case "search":
-                listAllOrder(Integer.valueOf(option[1]));
-                break;
-            case "list":
-                availableInventory();
-                break;
-            default:
-                System.out.println("Not valid option");
+                return purchaseItem(order);
+            }
+            case "cancel" -> { return cancelOrder(Double.valueOf(option[1]));}
+            case "search" ->{ return  listAllOrder(Integer.valueOf(option[1]));}
+            case "list" -> { return availableInventory();}
+            default -> {return "Not a valid option".concat("\n").concat("end");}
         }
     }
 
-    private void cancelOrder(double orderId) {
+    private String cancelOrder(double orderId) {
+        String message = "";
         if (!this.cacheHandler.orderCache.containsKey(orderId)) {
-            System.out.println( String.format("%d not found, no such order", orderId));
-            return;
+            message = String.format("%d not found, no such order", orderId);
+            message = message.concat("\n").concat("end");
+            System.out.println(message );
+            return message;
         }
         Order order = this.cacheHandler.orderCache.get(orderId);
         this.cacheHandler.orderCache.remove(orderId);
         this.cacheHandler.userCache.get(order.getUserId()).remove(orderId); //no sync
         this.cacheHandler.inventoryCache.put(order.getType(), this.cacheHandler.inventoryCache.getOrDefault(order.getType(), 0)+order.getQuantity());
-        System.out.println( String.format("Order %s is canceled", orderId));
+        message = String.format("Order %s is canceled", orderId);
+        message = message.concat("\n").concat("end");
+        System.out.println(message);
+        return message;
     }
 
 
-    private void purchaseItem(Order possibleOrder) {
-
+    private String purchaseItem(Order possibleOrder) {
+        String message = null;
         if (!this.cacheHandler.inventoryCache.containsKey(possibleOrder.getType())) {
-            System.out.println( " Not Available - We do not sell this product.");
-            return;
+
+            message= "Not Available - We do not sell this product.";
+            message = message.concat("\n").concat("end");
+            return message;
         }
 
 
         if (this.cacheHandler.inventoryCache.get(possibleOrder.getType()) < possibleOrder.getQuantity()) {
-            System.out.println( " Not Available - Not enough items");
-            return;
+            message =  " Not Available - Not enough items";
+            message = message.concat("\n").concat("end");
+            return message;
         }
 
         this.cacheHandler.inventoryCache.put(possibleOrder.getType(), this.cacheHandler.inventoryCache.get(possibleOrder.getType()) - possibleOrder.getQuantity());
         this.cacheHandler.userCache.computeIfAbsent(possibleOrder.getUserId(), (k) -> new HashSet<>()).add(possibleOrder.getOrderId());
         this.cacheHandler.orderCache.put(possibleOrder.getOrderId(), possibleOrder);
-        System.out.println((String.format("You order has been placed, %s %s %s %s", possibleOrder.getOrderId(), possibleOrder.getUserId(), possibleOrder.getType(), possibleOrder.getQuantity())));
-
+        message = String.format("You order has been placed, %s %s %s %s", possibleOrder.getOrderId(), possibleOrder.getUserId(), possibleOrder.getType(), possibleOrder.getQuantity());
+        message = message.concat("\n").concat("end");
+        System.out.println(message);
+        return  message;
     }
 
     // search username
 
-    private void listAllOrder(int userId) {
-
+    private String listAllOrder(int userId) {
+        final String[] message = {""};
         if (!this.cacheHandler.userCache.containsKey(userId)) {
-            System.out.println((String.format("No order found for userId", userId)));
-            return;
+            message[0] = String.format("No order found for userId %s", userId);
+            message[0] = message[0].concat("\n").concat("end");
+            return message[0];
         }
-        this.cacheHandler.userCache.get(userId).stream().forEach(x ->  System.out.println( String.format("Order id=%s, Product name=%s, Quantity=%s", this.cacheHandler.orderCache.get(x).getOrderId(), this.cacheHandler.orderCache.get(x).getType() , this.cacheHandler.orderCache.get(x).getQuantity())));
+
+        this.cacheHandler.userCache.get(userId).stream().forEach(x ->  {
+            message[0] = message[0].concat(String.format("Order id=%s, Product name=%s, Quantity=%s", this.cacheHandler.orderCache.get(x).getOrderId(), this.cacheHandler.orderCache.get(x).getType() , this.cacheHandler.orderCache.get(x).getQuantity()));
+            message[0] = message[0].concat("\n");
+        });
+        message[0] = message[0].concat("end");
+        return message[0];
     }
 
-    private void availableInventory() {
-        this.cacheHandler.inventoryCache.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(y -> System.out.println( String.format("Product name =%s , Quantity=%s",y.getKey(), y.getValue()) ));
+    private String availableInventory() {
+        final String[] message = {""};
+        this.cacheHandler.inventoryCache.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(y -> {
+            message[0] = message[0].concat(String.format("Product name =%s , Quantity=%s", y.getKey(), y.getValue()));
+            message[0] = message[0].concat("\n");
+        });
+
+        message[0] = message[0].concat("end");
+        System.out.println(message[0]);
+        return message[0];
     }
 }

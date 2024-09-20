@@ -43,7 +43,14 @@ public class UDPClientHandler implements Runnable{
             System.out.println("[" + timestamp.toString() + " ,IP: " + IPAddress + " ,Port: " + port + "]  " + clientMessage);
             String[] choice = clientMessage.toString().split("\\s+");
             //System.out.println(choice[0]);
-            choiceProcessor.processor(choice);
+            String message = choiceProcessor.processor(choice);
+
+                try {
+                    client.send(new DatagramPacket(message.getBytes(), 0, message.length(), receivePacket.getAddress(), receivePacket.getPort()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
         }
     }
 }
