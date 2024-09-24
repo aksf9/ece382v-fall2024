@@ -46,7 +46,7 @@ public class TCPClientHandler implements Runnable {
 
                 // writing the received message from
                 // client
-                System.out.println(String.format("Sent from the client: %s", line));
+                //System.out.println(String.format("Sent from the client: %s", line));
                 String[] option = line.split("\\s+");
                 String message = choiceProcessor.processor(option);
                 String[] eachLine = message.split("\\n");

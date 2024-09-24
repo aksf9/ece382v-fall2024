@@ -40,7 +40,7 @@ public class UDPClientHandler implements Runnable{
             String clientMessage = new String(receivePacket.getData(), 0, receivePacket.getLength());
             // Print the message with log header
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            System.out.println("[" + timestamp.toString() + " ,IP: " + IPAddress + " ,Port: " + port + "]  " + clientMessage);
+            //System.out.println("[" + timestamp.toString() + " ,IP: " + IPAddress + " ,Port: " + port + "]  " + clientMessage);
             String[] choice = clientMessage.toString().split("\\s+");
             //System.out.println(choice[0]);
             String message = choiceProcessor.processor(choice);

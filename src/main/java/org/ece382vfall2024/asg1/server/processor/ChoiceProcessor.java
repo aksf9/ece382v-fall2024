@@ -11,7 +11,7 @@ public class ChoiceProcessor {
 
     CacheHandler cacheHandler;
 
-    private synchronized double getCount(){
+    private synchronized int getCount(){
         return Server.orderCount++;
     }
     public ChoiceProcessor( CacheHandler cacheHandler) {
@@ -31,14 +31,14 @@ public class ChoiceProcessor {
                 order.setOrderId(getCount());
                 return purchaseItem(order);
             }
-            case "cancel" -> { return cancelOrder(Double.valueOf(option[1]));}
+            case "cancel" -> { return cancelOrder(Integer.valueOf(option[1]));}
             case "search" ->{ return  listAllOrder(option[1]);}
             case "list" -> { return availableInventory();}
             default -> {return "Not a valid option".concat("\n").concat("end");}
         }
     }
 
-    private String cancelOrder(double orderId) {
+    private String cancelOrder(int orderId) {
         String message = "";
         if (!this.cacheHandler.orderCache.containsKey(orderId)) {
             message = String.format("%d not found, no such order", orderId);
@@ -81,7 +81,7 @@ public class ChoiceProcessor {
         this.cacheHandler.orderCache.put(possibleOrder.getOrderId(), possibleOrder);
         message = String.format("You order has been placed, %s %s %s %s", possibleOrder.getOrderId(), possibleOrder.getUserName(), possibleOrder.getType(), possibleOrder.getQuantity());
         message = message.concat("\n").concat("end");
-        System.out.println(message);
+        //System.out.println(message);
         return  message;
     }
 
@@ -90,13 +90,13 @@ public class ChoiceProcessor {
     private String listAllOrder(String userId) {
         final String[] message = {""};
         if (!this.cacheHandler.userCache.containsKey(userId)) {
-            message[0] = String.format("No order found for user-name %s", userId);
+            message[0] = String.format("No order found for %s", userId);
             message[0] = message[0].concat("\n").concat("end");
             return message[0];
         }
 
         this.cacheHandler.userCache.get(userId).stream().forEach(x ->  {
-            message[0] = message[0].concat(String.format("Order id=%s, Product name=%s, Quantity=%s", this.cacheHandler.orderCache.get(x).getOrderId(), this.cacheHandler.orderCache.get(x).getType() , this.cacheHandler.orderCache.get(x).getQuantity()));
+            message[0] = message[0].concat(String.format("%s, %s, %s", this.cacheHandler.orderCache.get(x).getOrderId(), this.cacheHandler.orderCache.get(x).getType() , this.cacheHandler.orderCache.get(x).getQuantity()));
             message[0] = message[0].concat("\n");
         });
         message[0] = message[0].concat("end");
@@ -106,7 +106,7 @@ public class ChoiceProcessor {
     private String availableInventory() {
         final String[] message = {""};
         this.cacheHandler.inventoryCache.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(y -> {
-            message[0] = message[0].concat(String.format("Product name =%s , Quantity=%s", y.getKey(), y.getValue()));
+            message[0] = message[0].concat(String.format("%s  %s", y.getKey(), y.getValue()));
             message[0] = message[0].concat("\n");
         });
 

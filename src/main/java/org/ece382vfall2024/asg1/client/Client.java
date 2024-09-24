@@ -39,25 +39,29 @@ public class Client {
          *  Choose mode
          *  ask for input
          */
-        System.out.println("Type setmode T or setmode U or quit to end");
-        while (!(read = input.nextLine()).equalsIgnoreCase("quit")) {
-            String[] setmode = read.split("\\s+");
-            if(setmode.length <=1){
-                System.out.println("Wrong input. Restart client");
-                exit(0);
-            }
-            if (setmode[1].equals("T")) {
-                printAllOption();
-                read = input.nextLine();
+        //System.out.println("Type setmode T or setmode U or quit to end");
+        read = input.nextLine();
+        String[] setmode = read.split("\\s+");
+        boolean isTCP = false;
+        if(setmode[1].equals("T")){
+            isTCP = true;
+        }
+
+        while ((input.hasNext())) {
+            read = input.nextLine();
+            if(isTCP){
+            //if (setmode[1].equals("T")) {
+             //  printAllOption();
+                //read = input.nextLine();
                 String output = client.sendAndReadMessage(read);
                 System.out.println(output);
-            } else if (setmode[1].equals("U")) {
-                printAllOption();
-                read = input.nextLine();
+            } else  {
+                //printAllOption();
+               // read = input.nextLine();
                 String output = client.sendAndReceiveUDPMessage(read);
                 System.out.println(output);
             }
-            System.out.println("Type setmode T or setmode U or quit to end");
+            //System.out.println("Type setmode T or setmode U or quit to end");
         }
         client.tcpCleanup();
         client.udpCleanup();

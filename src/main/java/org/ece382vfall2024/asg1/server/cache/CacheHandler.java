@@ -12,9 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class CacheHandler {
 
-    public ConcurrentHashMap<String, Set<Double>> userCache = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, Set<Integer>> userCache = new ConcurrentHashMap<>();
 
-    public ConcurrentHashMap<Double, Order> orderCache = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Integer, Order> orderCache = new ConcurrentHashMap<>();
 
     public ConcurrentHashMap<String, Integer> inventoryCache = new ConcurrentHashMap<>();
 
@@ -23,11 +23,11 @@ public class CacheHandler {
         String line;
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/Input.txt"));
-            System.out.println("Preparing cache for ::");
+            //System.out.println("Preparing cache for ::");
             while ((line = bufferedReader.readLine())!=null){
                 String[] each = line.split("\\s+");
                 inventoryCache.put(each[0].trim(), Integer.valueOf(each[1].trim()));
-                System.out.println(each[0] + " " + each[1]);
+                //System.out.println(each[0] + " " + each[1]);
             }
         } catch (IOException e) {
             log.warn("Error", e);

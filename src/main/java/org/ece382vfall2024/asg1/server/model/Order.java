@@ -27,11 +27,11 @@ public class Order {
         this.status = status;
     }
 
-    public double getOrderId() {
+    public int getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(double orderId) {
+    public void setOrderId(int orderId) {
         this.orderId = orderId;
     }
 
@@ -50,7 +50,7 @@ public class Order {
     String status;
 
 
-    double orderId;
+    int orderId;
 
     String userName;
 

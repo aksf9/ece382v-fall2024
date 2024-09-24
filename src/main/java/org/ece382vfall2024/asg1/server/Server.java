@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 
 public class Server {
 
-    public static double orderCount = 1d;
+    public static int orderCount = 1;
     public static CacheHandler cacheHandler = new CacheHandler();
 
     public static void main(String ars[]) throws FileNotFoundException {
@@ -28,7 +28,7 @@ public class Server {
         catch (Exception e){
             System.out.println(e);
         }
-        System.out.println("Server Started. Listening for Clients on port 5001" + "...");
+        //System.out.println("Server Started. Listening for Clients on port 5001" + "...");
         // Assume messages are not over 1024 bytes
 
             ChoiceProcessor choiceProcessor = new ChoiceProcessor(cacheHandler);
@@ -46,9 +46,9 @@ public class Server {
 
                 while (true) {
                     Socket client = server.accept();
-                    System.out.println("New client connected"
+                    /*System.out.println("New client connected"
                             + client.getInetAddress()
-                            .getHostAddress());
+                            .getHostAddress());*/
                     ChoiceProcessor choiceProcessor = new ChoiceProcessor(cacheHandler);
                     TCPClientHandler TCPClientHandler = new TCPClientHandler(client, choiceProcessor);
                     new Thread(TCPClientHandler).start();
