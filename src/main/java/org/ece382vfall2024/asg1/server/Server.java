@@ -15,7 +15,6 @@ public class Server {
     public static CacheHandler cacheHandler = new CacheHandler();
 
     public static void main(String ars[]) throws FileNotFoundException {
-
         new Thread(() -> tcpServer()).start();
         new Thread(() -> udpServer()).start();
     }

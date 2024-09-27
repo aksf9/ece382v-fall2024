@@ -30,7 +30,7 @@ public class CacheHandler {
                 //System.out.println(each[0] + " " + each[1]);
             }
         } catch (IOException e) {
-            log.warn("Error", e);
+            //log.warn("Error", e);
         }
     }
 }
